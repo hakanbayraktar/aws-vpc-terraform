@@ -114,19 +114,19 @@ terraform apply
 ### Bastion Host'a Bağlanma
 
 ```bash
-ssh -i ~/.ssh/my-key-pair.pem ec2-user@<bastion-public-ip>
+ssh -i ~/.ssh/production-vpc-key.pem ec2-user@<bastion-public-ip>
 ```
 
 ### Web Server'a Bastion Üzerinden Bağlanma
 
 ```bash
-ssh -i ~/.ssh/my-key-pair.pem -o ProxyCommand='ssh -i ~/.ssh/my-key-pair.pem -W %h:%p ec2-user@<bastion-ip>' ec2-user@<web-server-private-ip>
+ssh -i ~/.ssh/production-vpc-key.pem -o ProxyCommand='ssh -i ~/.ssh/production-vpc-key.pem -W %h:%p ec2-user@<bastion-ip>' ec2-user@<web-server-private-ip>
 ```
 
 ### Private Instance'a Bağlanma
 
 ```bash
-ssh -i ~/.ssh/my-key-pair.pem -o ProxyCommand='ssh -i ~/.ssh/my-key-pair.pem -W %h:%p ec2-user@<bastion-ip>' ec2-user@<private-instance-ip>
+ssh -i ~/.ssh/production-vpc-key.pem -o ProxyCommand='ssh -i ~/.ssh/production-vpc-key.pem -W %h:%p ec2-user@<bastion-ip>' ec2-user@<private-instance-ip>
 ```
 
 ### Web Sitesine Erişim
