@@ -111,23 +111,6 @@ terraform apply
 
 ```
 
-
-### Adım 5: Connectivity Testing
-
-```bash
-# Web server'ı test et
-curl -I $(terraform output -raw web_server_url)
-
-# SSH bağlantısını test et
-ssh -o ConnectTimeout=10 -i ~/.ssh/production-vpc-key.pem ec2-user@$(terraform output -raw bastion_host_public_ip) exit
-
-# Private instance'a bastion üzerinden bağlan
-ssh -i ~/.ssh/production-vpc-key.pem -o ProxyCommand='ssh -i ~/.ssh/production-vpc-key.pem -W %h:%p ec2-user@$(terraform output -raw bastion_host_public_ip)' ec2-user@$(terraform output -raw private_instance_ip)
-```
-
-
-## 🔧 Kullanım
-
 ### Bastion Host'a Bağlanma
 
 ```bash
