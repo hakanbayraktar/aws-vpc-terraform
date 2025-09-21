@@ -59,7 +59,7 @@ Default output format [None]:
 
 ```bash
 # Repository'yi klonla veya dosyaları indir
-git clone <repository-url>
+git clone https://github.com/hakanbayraktar/aws-vpc-terraform
 cd aws-vpc-terraform
 
 ```
