@@ -39,7 +39,7 @@ resource "aws_instance" "web_server" {
   monitoring = true
 
   # User data for Apache installation
-  user_data = local.web_server_user_data
+  user_data_base64 = local.web_server_user_data
 
   # Root volume encryption
   root_block_device {
@@ -77,7 +77,7 @@ resource "aws_instance" "private_instance" {
   # Root volume encryption
   root_block_device {
     volume_type = "gp3"
-    volume_size = 20
+    volume_size = 8
     encrypted   = true
     
     tags = merge(var.common_tags, {
