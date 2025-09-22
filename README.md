@@ -138,7 +138,7 @@ curl http://<web-server-public-ip>
 
 ## 🧹 Resource Cleanup Commands
 
-# ⚠️ NAT Gateway and EC2 instances incur hourly costs.
+### ⚠️ NAT Gateway and EC2 instances incur hourly costs.
 Always destroy the resources after completing the lab:
 
 ```bash
