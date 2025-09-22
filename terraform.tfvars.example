@@ -14,7 +14,7 @@ private_subnet_cidr   = "10.0.2.0/24"    # us-east-1b
 
 # EC2 Configuration
 instance_type = "t3.micro"
-key_pair_name = "my-key-pair"  # IMPORTANT: Make sure this key pair exists in your AWS account
+key_pair_name = "production-vpc-key"  # IMPORTANT: Make sure this key pair exists in your AWS account
 
 # Security Configuration
 allowed_ssh_cidr = "0.0.0.0/0"  # SECURITY: Change this to your IP address (e.g., "203.0.113.0/32")

@@ -1,51 +1,52 @@
 # AWS Production VPC Infrastructure with Terraform
 
-Bu proje, AWS'de production-ready bir VPC altyapısı kurmak için Terraform kodlarını içerir. Güvenli, ölçeklenebilir ve maliyet-optimized bir mimari sunar.
+This project contains Terraform code to provision a production-ready VPC infrastructure on AWS.
+It delivers a secure, scalable, and cost-optimized architecture for real-world workloads.
 
-## 🏗️ Mimari Genel Bakış
+## 🏗️ Architecture Overview
 
-### Altyapı Bileşenleri
+### Infrastructure Components
 
-- **Custom VPC (10.0.0.0/16)** - İzole edilmiş ağ ortamı
-- **Internet Gateway** - İnternet bağlantısı
-- **Public Subnet (10.0.1.0/24, us-east-1a)** - İnternet erişimi olan subnet
-- **Private Subnet (10.0.2.0/24, us-east-1b)** - İzole edilmiş subnet
-- **NAT Gateway** - Private subnet'ten outbound internet erişimi
-- **Bastion Host** - Güvenli SSH erişimi için jump host
-- **Apache Web Server** - Public subnet'te web sunucusu
-- **Optional Private EC2** - Backend servisleri için
+- **Custom VPC (10.0.0.0/16)** - Isolated network environment
+- **Internet Gateway** - Provides internet access
+- **Public Subnet (10.0.1.0/24, us-east-1a)** - Subnet with direct internet access
+- **Private Subnet (10.0.2.0/24, us-east-1b)** - Isolated subnet without direct internet
+- **NAT Gateway** - Enables outbound internet access from private subnet
+- **Bastion Host** - Jump server for secure SSH access
+- **Apache Web Server** - Deployed in public subnet with HTTP access
+- **Optional Private EC2** - For backend services (reachable via Bastion + NAT)
 
-### Güvenlik Özellikleri
+### Security Features
 
-- **Bastion Host**: SSH sadece belirtilen CIDR'dan
-- **Web Server**: HTTP internet'ten, SSH sadece bastion'dan
-- **Private Instance**: SSH sadece bastion'dan, outbound NAT üzerinden
-- **Tüm instance'lar aynı key pair kullanır**
-- **EBS volume'lar şifrelenmiş**
-- **Security group'lar least privilege prensibi**
+- **Bastion Host**: SSH allowed only from your IP (restricted CIDR)
+- **Web Server**: HTTP open to internet, SSH only via Bastion
+- **Private Instance**: SSH only via Bastion, outbound via NAT
+- **All instances share the same key pair**
+- **EBS volumes encrypted by default**
+- **Security Groups follow least privilege principle**
 
-## 📋 Ön Gereksinimler
+## 📋 Prerequisites
 
-1. **AWS CLI** kurulu ve yapılandırılmış
-2. **Terraform** >= 1.0 kurulu
-3. **AWS hesabında Key Pair** oluşturulmuş
-4. **Gerekli IAM izinleri**:
+1. **AWS CLI** installed & configured
+2. **Terraform** >= 1.0 installed
+3. **AWS Key Pair**  created in your AWS account
+4. **Required IAM permissions**:
    - EC2FullAccess
    - VPCFullAccess
    - IAMReadOnlyAccess
 
 ## 🚀 Detailed Deployment Instructions
 
-### Ön Hazırlık Kontrolleri
+### Verify Setup
 
 ```bash
-# 1. AWS CLI kurulu mu kontrol et
+# 1. Check AWS CLI
 aws --version
 
-# 2. Terraform kurulu mu kontrol et
+# 2. Check Terraform
 terraform --version
 
-# 3. AWS kaynaklarına erişebilmek için AWS credentials bilgilerini komut satırından gir
+# 3. Configure AWS credentials (if not already configured)
 aws configure
 AWS Acces Key ID [****************3Y7H]
 AWS Secret Access Key [****************l9vV] 
@@ -55,81 +56,80 @@ Default output format [None]:
 
 ```
 
-### Adım 1: Repository Setup
+### Step 1: Repository Setup
 
 ```bash
-# Repository'yi klonla veya dosyaları indir
 git clone https://github.com/hakanbayraktar/aws-vpc-terraform
 cd aws-vpc-terraform
 
 ```
 
-### Adım 2: AWS Key Pair Hazırlığı
+### Step 2: Create AWS Key Pair
 
 ```bash
 
-# Yeni key pair oluştur (eğer yoksa)
+# Create a new key pair (if you don’t have one)
 aws ec2 create-key-pair --key-name production-vpc-key --query 'KeyMaterial' --output text > ~/.ssh/production-vpc-key.pem
 
-# İzinleri ayarla
+# Set permissions
 chmod 400 ~/.ssh/production-vpc-key.pem
 
-# Key pair'in oluştuğunu doğrula
+# Verify key pair exists
 aws ec2 describe-key-pairs --key-names production-vpc-key
 ```
 
-### Adım 3: Terraform Variables Configuration
+### Step 3: Terraform Variables Configuration
 
 ```bash
-# Example dosyasını kopyala
+# Copy example variables file
 cp terraform.tfvars.example terraform.tfvars
 
-# Kendi IP adresini öğren (güvenlik için)
+# Find your public IP
 curl -s https://checkip.amazonaws.com
 
-# terraform.tfvars dosyasını düzenle
+# Edit variables
 vi terraform.tfvars
 ```
 
-### Adım 4: Terraform Kodlarını Çalıştır
+### Step 4: Deploy Infrastructure
 
 ```bash
-# Terraform'u initialize et
+# Initialize Terraform
 terraform init
 ```
 
 
 ```bash
-# Execution plan oluştur
+# Review execution plan
 terraform plan
 ```
 
 
 ```bash
-# Altyapıyı oluştur (onay iste)
-terraform apply
+# Apply (with approval)
+terraform apply --auto-approve
 
 ```
 
-### Bastion Host'a Bağlanma
+### Step 5: Connect to Bastion Host
 
 ```bash
 ssh -i ~/.ssh/production-vpc-key.pem ec2-user@<bastion-public-ip>
 ```
 
-### Web Server'a Bastion Üzerinden Bağlanma
+### Step 6: Connect to Web Server via Bastion
 
 ```bash
 ssh -i ~/.ssh/production-vpc-key.pem -o ProxyCommand='ssh -i ~/.ssh/production-vpc-key.pem -W %h:%p ec2-user@<bastion-ip>' ec2-user@<web-server-private-ip>
 ```
 
-### Private Instance'a Bağlanma
+### Step 7: Connect to Private Instance
 
 ```bash
 ssh -i ~/.ssh/production-vpc-key.pem -o ProxyCommand='ssh -i ~/.ssh/production-vpc-key.pem -W %h:%p ec2-user@<bastion-ip>' ec2-user@<private-instance-ip>
 ```
 
-### Web Sitesine Erişim
+### Step 8: Test Web Server
 
 ```bash
 curl http://<web-server-public-ip>
@@ -138,22 +138,22 @@ curl http://<web-server-public-ip>
 
 ## 🧹 Resource Cleanup Commands
 
-### Tam Altyapı Temizliği
+# ⚠️ NAT Gateway and EC2 instances incur hourly costs.
+Always destroy the resources after completing the lab:
 
 ```bash
 
-# Onay ile yok et
 terraform destroy
 
 ```
 
-## 📚 Ek Kaynaklar
+## 📚 References
 
 - [AWS VPC Documentation](https://docs.aws.amazon.com/vpc/)
 - [Terraform AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
 - [AWS Security Best Practices](https://aws.amazon.com/architecture/security-identity-compliance/)
 
 
-## 📄 Lisans
+## 📄 License
 
-Bu proje MIT lisansı altında lisanslanmıştır.
+This project is licensed under the MIT License.
