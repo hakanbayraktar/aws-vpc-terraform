@@ -17,7 +17,7 @@ instance_type = "t3.micro"
 key_pair_name = "production-vpc-key"  # IMPORTANT: Make sure this key pair exists in your AWS account
 
 # Security Configuration
-allowed_ssh_cidr = "0.0.0.0/0"  # SECURITY: Change this to your IP address (e.g., "203.0.113.0/32")
+allowed_ssh_cidr = "Your IP"  # SECURITY: Change this to your IP address (e.g., "203.0.113.0/32")
 
 # Optional Features
 enable_private_instance = true

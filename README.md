@@ -87,7 +87,7 @@ cp terraform.tfvars.example terraform.tfvars
 # Find your public IP
 curl -s https://checkip.amazonaws.com
 
-# Edit variables
+# Edit variables(your IP)
 vi terraform.tfvars
 ```
 
